@@ -1,0 +1,44 @@
+{
+ "name": "Challenges",
+ "children": [
+  {
+   "name": "People",
+   "children": [
+    {"name": "Culture", "size": 40},
+    {"name": "Capability", "size": 55},
+    {"name": "Recruitment", "size": 75},
+    {"name": "Training", "size": 30}
+   ]
+  },
+  {
+   "name": "Audience & Marketing", "size": 280,
+   "children": [
+    {"name": "Content", "size": 80},
+    {"name": "Audience", "size": 50},
+    {"name": "Brand & Promotion", "size": 40}
+   ]
+  },
+  {
+   "name": "Content",
+   "children": [
+    {"name": "Diversity", "size": 30},
+    {"name": "Digital", "size": 60},
+    {"name": "Quality", "size": 20},
+    {"name": "Radio", "size": 40}
+
+
+   ]
+  },
+  {
+   "name": "Resources",
+   "children": [
+    {"name": "Digital Gear", "size": 42},
+    {"name": "Funding", "size": 35},
+    {"name": "Content", "size": 50}
+    ]
+
+
+
+  }
+ ]
+}

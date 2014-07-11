@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+
+
+
+#contain {
+ width: 1260px;
+ margin: 0 auto;
+ height: 900px;
+
+}
+ 
+#holder {
+  border: 2px solid #EDEDED; 
+width:680px;
+height: 680px;
+margin-left: 380px;
+/* margin-top: 290px; */
+background-color: white;
+position: relative;
+}
+
+#nav {
+width:680px;
+height: 42px;
+margin-left: 380px;
+margin-top: 232px;
+background-color: white;
+}
+
+.navbutton{
+width: 150px;
+display: inline-block;
+height: 30px;
+padding-top: 12px;
+text-align: center;
+margin-right: 5px;
+
+border: 0px solid;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
+}
+
+.navbutton:hover {
+
+font-size: 16px;
+height: 32px;
+padding-top: 10px;
+
+}
+
+#statusquo {
+  background-color: rgb(22,185,226);
+}
+
+#adapting {
+  background-color: rgb(246,98,170);
+}
+
+#challenges {
+  background-color: rgb(187,248,79);
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  opacity: 0.7;
+
+  /*stroke: black;
+  stroke-width: 2px; */
+}
+
+.node--leaf {
+  fill: white;
+  opacity: 0.9;
+}
+
+.node--root {
+background-color: #CCC;
+/* display: none; */
+opacity: 0.2; 
+
+
+}
+
+text {
+  width: 100px;
+  background-color: white; 
+  fill: black;
+  height: 20px;
+}
+
+.name {
+  font: 14px Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  text-anchor: middle;
+   /*text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+  text-transform:uppercase; 
+  color: red;*/
+
+}
+
+.name:hover {
+color: blue;
+font-size: 18px;
+}
+
+.size {
+  margin-top: 10px;
+  position: absolute;
+  top:10px;
+  font: 12px Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: left;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+
+  color: #CCC;
+}
+
+.name,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+}
+
+html {
+background-color: white;
+background-image: url("cropped-radiosource.jpg");
+background-repeat: no-repeat;
+background-position-X: center;
+font:  14px  Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#test {
+  position: absolute;
+  top: 0;
+  left: 0; 
+  z-index: 10;
+  height: 100px;
+  width: 100px;
+  background-color: blue;
+  display: none;
+
+}
+
+
+
+
+</style>
+<body>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<div id ="contain">
+  <div id="nav"> 
+    <div class="navbutton" id="statusquo"> Status Quo </div>
+    <div class="navbutton" id="adapting"> Adapting </div>
+    <div class="navbutton" id="challenges"> Challenges </div>
+
+   </div> 
+  <div id ="holder">
+    <div id ="test"> This will be full of the responses from each category </div>
+<script>
+
+
+  console.log("Script Started");
+    
+   /* d3.select(".node--leaf").on("click",function() {$('.node--leaf').css({background-color:'grey'});  }); */
+
+var margin = 0,
+    diameter = 680;
+
+var color = d3.scale.linear()
+    .domain([-1, 5])
+     .range(["hsl(78,100,48)", "hsl(82,98,80)"])
+    .interpolate(d3.interpolateHcl);
+
+
+  // Pink
+  //  .range(["hsl(332,87,65)", "hsl(330,89,67)"])
+  // Green
+  //  .range(["hsl(78,100,48)", "hsl(82,98,49)"])
+  //   T2 .range(["hsl(78,100,48)", "hsl(82,98,80)"])
+  // Blue
+  //  .range(["hsl(194,80,46)", "hsl(190,84,50)"])
+  //   T2 .range(["hsl(182,80,52)", "hsl(196,92,98)"])
+
+ 
+
+var pack = d3.layout.pack()
+    .padding(2)
+    .size([diameter - margin, diameter - margin])
+    .value(function(d) { return d.size; })
+
+
+var svg = d3.select("#holder").append("svg")
+    .attr("width", diameter)
+    .attr("height", diameter)
+  .append("g")
+    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+d3.json("flare2.json", function(error, root) {
+  if (error) return console.error(error);
+
+  var focus = root,
+      nodes = pack.nodes(root),
+      view;
+
+  var test = document.getElementById("#test")
+
+  var circle = svg.selectAll("circle")
+      .data(nodes)
+    .enter().append("circle")
+      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation();
+             $('#test').css({display:'block'});  
+       })
+      .on('mouseover', function (d,i) { console.log("move over");
+       // test.style.display = "block";
+        //  document.getElementById('#test').style.display ='block';  
+   
+       }) ;
+
+
+  var text = svg.selectAll("text")
+      .data(nodes)
+    .enter().append("text")
+    .attr("width", 100)
+      .attr("class", "name")
+      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      .style("display", function(d) { return d.parent === root ? null : "none"; }) 
+      .text(function(d) { return d.name; });
+
+     .call(transformtext)
+
+       function transformtext(text) {
+        console.log("text")
+    text.attr("transform",function(d) {
+        var translation = "translate(" + parseInt(x(d.x) + x_padding) + "," + parseInt(y(d.y) + y_padding) + ")";
+        return translation;
+    });
+  }
+
+  /*  circles.enter().append("svg:circle")
+    .attr("id", function(d, i) { return "c" + i; })
+    .attr("rInit", function(d, i) { return d.r })
+    .on('mouseover', function (d,i) {
+     console.log("move over")
+    } */
+
+       /*.offset([-10, 0])
+      .html(function(d) {
+        return "<strong>" + d.name + ": </strong> <span style='color:grey'>" + (d.size) + "</span>"; */
+
+
+ /*var text = svg.selectAll("text.size")
+      .data(nodes)
+    .enter().append("text")
+      .attr("class", "size")
+      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
+      .style("display", function(d) { return d.parent === root ? null : "none"; })
+      .text(function(d) { return d.size; }); 
+
+ 
+
+    desc.enter()
+      .append("div")
+      .classed("description",true)
+      .append("h3")
+      .text(function (d) { return d.name + " ";})
+      .append("span")
+      .classed("h_amount", true)
+      .text(displayvalue);
+
+    desc.append("p")
+      .text(function (d) { return d.size;}); */
+
+
+/* svg.selectAll("text.value")
+                .data(nodes)
+                .enter()
+            d3.select("#holder").    .append("text")
+                .attr("class", "value")
+                .text(function(d){
+                    return d.value;
+                }) */
+
+
+    $('#test').click(function(){
+     $('#test').css({display:'none'});  
+  });
+
+  var node = svg.selectAll("circle,text");
+
+  d3.select("body")
+      //.style("background", color(-1))
+      .on("click", function() { zoom(root); });
+
+  zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+  function zoom(d) {
+
+    var focus0 = focus; focus = d;
+
+    var transition = d3.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .tween("zoom", function(d) {
+          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+          return function(t) { zoomTo(i(t)); };
+        });
+
+    transition.selectAll("text")
+      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+  }
+
+  function zoomTo(v) {
+    var k = diameter / v[2]; view = v;
+    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+    circle.attr("r", function(d) { return d.r * k; });
+  }
+});
+
+d3.select(self.frameElement).style("height", diameter + "px");
+
+</script>
+</div> 
+</div>
+</body>
+</html>
